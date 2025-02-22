@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Murat Bilgisayar - Antalya'da ikinci el bilgisayar satışı ve teknik servis hizmetleri. Kaliteli ikinci el bilgisayarlar ve bilgisayar parçaları, uzman teknik destek.">
+    <meta name="keywords" content="Antalya ikinci el bilgisayar, ikinci el bilgisayar parçaları, teknik servis, Murat Bilgisayar, uygun fiyatlı bilgisayar, bilgisayar onarımı">
+    <meta name="author" content="Murat Bilgisayar">
+    <meta name="theme-color" content="#1e293b">
+    <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { background-color: #0f172a; color: #f1f5f9; }
+        .glass {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+        }
+        .product-card:hover { transform: scale(1.05); transition: 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+    <header class="text-center py-8">
+        <h1 class="text-4xl font-extrabold tracking-wide">💻 Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</h1>
+        <p class="text-lg mt-2">Teknolojik, modern ve güvenilir çözümler.</p>
+    </header>
+
+    <main class="container mx-auto px-4">
+        <!-- 🔄 Slider Bölümü -->
+        <section id="slider" class="w-full overflow-hidden rounded-2xl shadow-lg mb-10"></section>
+
+        <!-- 🔍 Arama ve Filtreleme -->
+        <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
+            <input id="searchInput" type="text" placeholder="🔍 Ürün Ara..." class="w-full md:w-1/2 p-3 rounded-lg bg-slate-800 text-white placeholder-gray-400">
+            <select id="categoryFilter" class="w-full md:w-1/4 p-3 rounded-lg bg-slate-800 text-white">
+                <option value="">Tüm Kategoriler</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Gaming Laptop">Gaming Laptop</option>
+                <option value="Ekran Kartı">Ekran Kartı</option>
+                <option value="RAM">RAM</option>
+                <option value="Anakart">Anakart</option>
+            </select>
+        </div>
+
+        <!-- 🔥 Sıcak Ürünler -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-4">🔥 Sıcak Ürünler</h2>
+            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- 💻 Tüm Ürünler -->
+        <section>
+            <h2 class="text-2xl font-semibold mt-12 mb-4">💻 Tüm Ürünler</h2>
+            <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <!-- 🔎 Ürün Detay Modalı -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
+        <div class="bg-white text-black rounded-2xl p-6 max-w-lg w-full relative glass">
+            <button onclick="closeModal()" class="absolute top-2 right-2 text-black">✖️</button>
+            <img id="modalImage" class="rounded-xl w-full mb-4" alt="Ürün Görseli">
+            <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+            <p id="modalDescription" class="mt-2"></p>
+            <p id="modalPrice" class="text-xl font-semibold text-green-600 mt-4"></p>
+            <p class="text-sm text-gray-500 mt-1">Detaylı bilgi için hemen arayın! 📞</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec';
+
+        async function fetchData(endpoint) {
+            const res = await axios.get(`${API_BASE}${endpoint}`);
+            return res.data;
+        }
+
+        function renderSlider(sliderData) {
+            const slider = document.getElementById('slider');
+            slider.innerHTML = `<div class="relative w-full h-64 rounded-2xl overflow-hidden">
+                ${sliderData.map(url => `<img src="${url.fotoğrafurl}" class="w-full h-64 object-cover">`).join('')}
+            </div>`;
+        }
+
+        function renderProducts(products, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = products.map(p => `
+                <div class="product-card glass p-4 rounded-2xl shadow-lg cursor-pointer" onclick="showModal('${p.ürünismi}', '${p.ürünresmiurl}', '${p.fiyat}', '${p.ürünaçıklaması}')">
+                    <img src="${p.ürünresmiurl}" class="w-full h-48 object-cover rounded-xl">
+                    <h3 class="text-lg font-semibold mt-3">${p.ürünismi}</h3>
+                    <p class="text-green-500 text-md font-bold">${p.fiyat} TL</p>
+                </div>
+            `).join('');
+        }
+
+        function showModal(title, image, price, description) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalImage').src = image;
+            document.getElementById('modalPrice').innerText = `${price} TL`;
+            document.getElementById('modalDescription').innerText = description;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        async function init() {
+            const slider = await fetchData('?sheet=slider');
+            renderSlider(slider);
+
+            const hotProducts = await fetchData('?sheet=sicakurunler');
+            renderProducts(hotProducts, 'hotProducts');
+
+            const allProducts = await fetchData('?sheet=tumurunler');
+            renderProducts(allProducts, 'allProducts');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', async (e) => {
+            const searchValue = e.target.value;
+            const allProducts = await fetchData(`?sheet=tumurunler&search=${searchValue}`);
+            renderProducts(allProducts, 'allProducts');
+        });
+
+        document.getElementById('categoryFilter').addEventListener('change', async (e) => {
+            const category = e.target.value;
+            const allProducts = await fetchData(`?sheet=tumurunler&category=${category}`);
+            renderProducts(allProducts, 'allProducts');
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
