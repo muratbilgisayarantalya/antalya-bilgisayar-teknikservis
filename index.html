@@ -9,70 +9,190 @@
     <meta name="theme-color" content="#1e293b">
     <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; }
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Daha modern font */
+            overflow-x: hidden; /* Yatay kaymayı önler */
+        }
+
+        /* Splash Screen Stilleri */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* En üstte görünmesi için */
+            flex-direction: column;
+        }
+
+        .splash-logo {
+            width: 150px; /* Logo boyutunu ayarlayın */
+            margin-bottom: 20px;
+            animation: pulse 2s infinite; /* Logo için nabız animasyonu */
+        }
+
+        .splash-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #f1f5f9;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+
         .glass {
             backdrop-filter: blur(16px) saturate(180%);
             background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
+            border-radius: 1.25rem; /* Daha yuvarlak */
             border: 1px solid rgba(255, 255, 255, 0.125);
+            padding: 1.5rem; /* İç boşluk arttırıldı */
         }
-        .product-card:hover { transform: scale(1.05); transition: 0.3s ease; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background-color: #64748b; border-radius: 10px; }
+
+        .product-card:hover {
+            transform: scale(1.03); /* Daha az büyüme */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Yumuşak geçiş ve gölge */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Hover efekti için gölge */
+        }
+
+        ::-webkit-scrollbar { width: 10px; } /* Scrollbar genişliği */
+        ::-webkit-scrollbar-thumb {
+            background-color: #64748b;
+            border-radius: 12px; /* Daha yuvarlak scrollbar */
+            border: 3px solid #0f172a; /* Scrollbar ve arkaplan arasında boşluk */
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #0f172a; /* Scrollbar yolu rengi */
+        }
+
+        /* Modal Stilleri */
+        #productModal .glass {
+            padding: 2rem;
+        }
+        #productModal button {
+            color: #6b7280; /* Daha yumuşak kapatma butonu rengi */
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #productModal button:hover {
+            opacity: 1;
+        }
+
+        /* Arama ve Filtreleme Input Stilleri */
+        #searchInput, #categoryFilter {
+            background-color: #1e293b;
+            border: 1px solid #334155; /* Daha belirgin kenarlık */
+            color: #f1f5f9;
+            padding: 1rem; /* İç boşluk */
+            border-radius: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus, #categoryFilter:focus {
+            border-color: #f1f5f9; /* Odaklandığında kenarlık rengi */
+            outline: none; /* Tarayıcı varsayılan odağı kaldırır */
+            box-shadow: 0 0 0 2px rgba(241, 245, 249, 0.2); /* Yumuşak odak gölgesi */
+        }
+
+
     </style>
 </head>
-<body class="min-h-screen font-sans">
-    <header class="text-center py-8">
-        <h1 class="text-4xl font-extrabold tracking-wide">💻 Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</h1>
-        <p class="text-lg mt-2">Teknolojik, modern ve güvenilir çözümler.</p>
+<body class="min-h-screen font-sans antialiased">
+
+    <div id="splash-screen">
+        <img src="https://via.placeholder.com/150" alt="Murat Bilgisayar Logo" class="splash-logo">
+        <div class="splash-spinner"></div>
+    </div>
+    <header class="text-center py-12">
+        <h1 class="text-4xl font-extrabold tracking-tight text-white">
+            <i class="fas fa-laptop-code mr-2"></i> Murat Bilgisayar
+        </h1>
+        <p class="mt-3 text-xl text-gray-300 italic">Antalya İkinci El Bilgisayar & Teknik Servis</p>
+        <p class="text-lg mt-1 text-gray-400">Teknolojik, modern ve güvenilir çözümler.</p>
     </header>
 
-    <main class="container mx-auto px-4">
-        <!-- 🔄 Slider Bölümü -->
-        <section id="slider" class="w-full overflow-hidden rounded-2xl shadow-lg mb-10"></section>
+    <main class="container mx-auto px-6 pb-12">
 
-        <!-- 🔍 Arama ve Filtreleme -->
-        <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
-            <input id="searchInput" type="text" placeholder="🔍 Ürün Ara..." class="w-full md:w-1/2 p-3 rounded-lg bg-slate-800 text-white placeholder-gray-400">
-            <select id="categoryFilter" class="w-full md:w-1/4 p-3 rounded-lg bg-slate-800 text-white">
-                <option value="">Tüm Kategoriler</option>
-                <option value="Laptop">Laptop</option>
-                <option value="Gaming Laptop">Gaming Laptop</option>
-                <option value="Ekran Kartı">Ekran Kartı</option>
-                <option value="RAM">RAM</option>
-                <option value="Anakart">Anakart</option>
-            </select>
+        <section id="slider" class="w-full overflow-hidden rounded-3xl shadow-md mb-12">
+            </section>
+
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 space-y-4 md:space-y-0 md:space-x-4">
+            <div class="relative w-full md:w-1/2">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-500"></i>
+                </div>
+                <input id="searchInput" type="text" class="pl-10 w-full" placeholder="Ürün Ara...">
+            </div>
+            <div class="w-full md:w-1/4">
+                <select id="categoryFilter" class="w-full">
+                    <option value="">Tüm Kategoriler</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Gaming Laptop">Gaming Laptop</option>
+                    <option value="Ekran Kartı">Ekran Kartı</option>
+                    <option value="RAM">RAM</option>
+                    <option value="Anakart">Anakart</option>
+                </select>
+            </div>
         </div>
 
-        <!-- 🔥 Sıcak Ürünler -->
-        <section>
-            <h2 class="text-2xl font-semibold mb-4">🔥 Sıcak Ürünler</h2>
-            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <section id="hot-products-section">
+            <h2 class="section-title">🔥 Sıcak Ürünler</h2>
+            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                </div>
         </section>
 
-        <!-- 💻 Tüm Ürünler -->
-        <section>
-            <h2 class="text-2xl font-semibold mt-12 mb-4">💻 Tüm Ürünler</h2>
-            <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <section id="all-products-section" class="mt-16">
+            <h2 class="section-title">💻 Tüm Ürünler</h2>
+            <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                </div>
         </section>
     </main>
 
-    <!-- 🔎 Ürün Detay Modalı -->
     <div id="productModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
-        <div class="bg-white text-black rounded-2xl p-6 max-w-lg w-full relative glass">
-            <button onclick="closeModal()" class="absolute top-2 right-2 text-black">✖️</button>
-            <img id="modalImage" class="rounded-xl w-full mb-4" alt="Ürün Görseli">
-            <h3 id="modalTitle" class="text-2xl font-bold"></h3>
-            <p id="modalDescription" class="mt-2"></p>
-            <p id="modalPrice" class="text-xl font-semibold text-green-600 mt-4"></p>
-            <p class="text-sm text-gray-500 mt-1"><a href="tel:05330277258">Detaylı bilgi için hemen arayın! 📞</a></p>
+        <div class="bg-white text-black rounded-3xl p-8 max-w-lg w-full relative glass">
+            <button onclick="closeModal()" class="absolute top-3 right-3">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <img id="modalImage" class="rounded-2xl w-full mb-6" alt="Ürün Görseli">
+            <h3 id="modalTitle" class="text-3xl font-bold mb-3"></h3>
+            <p id="modalDescription" class="text-gray-700 leading-relaxed"></p>
+            <p id="modalPrice" class="text-2xl font-semibold text-green-700 mt-5">
+                <i class="fas fa-tag mr-1"></i> <span id="modalPriceValue"></span>
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+                <a href="tel:05330277258" class="text-blue-600 hover:underline">
+                    <i class="fas fa-phone mr-1"></i> Detaylı bilgi için arayın!
+                </a>
+            </p>
         </div>
     </div>
 
     <script>
         const API_BASE = 'https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec';
+        const splashScreen = document.getElementById('splash-screen');
 
         async function fetchData(endpoint) {
             const res = await axios.get(`${API_BASE}${endpoint}`);
@@ -81,18 +201,46 @@
 
         function renderSlider(sliderData) {
             const slider = document.getElementById('slider');
-            slider.innerHTML = `<div class="relative w-full h-64 rounded-2xl overflow-hidden">
-                ${sliderData.map(url => `<img src="${url.fotoğrafurl}" class="w-full h-64 object-cover">`).join('')}
-            </div>`;
+            if (!sliderData || sliderData.length === 0) {
+                slider.innerHTML = '<p class="text-center py-10">Slider içeriği bulunamadı.</p>';
+                return;
+            }
+            const sliderInner = document.createElement('div');
+            sliderInner.className = 'relative w-full h-72 rounded-3xl overflow-hidden';
+            slider.appendChild(sliderInner);
+
+            sliderData.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url.fotoğrafurl;
+                img.className = 'w-full h-72 object-cover absolute transition-opacity duration-500 opacity-0';
+                sliderInner.appendChild(img);
+            });
+
+            let slideIndex = 0;
+            const slides = sliderInner.querySelectorAll('img');
+            slides[slideIndex].classList.add('opacity-100');
+
+            setInterval(() => {
+                slides[slideIndex].classList.remove('opacity-100');
+                slideIndex = (slideIndex + 1) % slides.length;
+                slides[slideIndex].classList.add('opacity-100');
+            }, 5000); // 5 saniyede bir değişir
         }
+
 
         function renderProducts(products, containerId) {
             const container = document.getElementById(containerId);
+            if (!products || products.length === 0) {
+                container.innerHTML = '<p class="text-center col-span-full py-6">Ürün bulunamadı.</p>';
+                return;
+            }
             container.innerHTML = products.map(p => `
-                <div class="product-card glass p-4 rounded-2xl shadow-lg cursor-pointer" onclick="showModal('${p.ürünismi}', '${p.ürünresmiurl}', '${p.fiyat}', '${p.ürünaçıklaması}')">
-                    <img src="${p.ürünresmiurl}" class="w-full h-48 object-cover rounded-xl">
-                    <h3 class="text-lg font-semibold mt-3">${p.ürünismi}</h3>
-                    <p class="text-green-500 text-md font-bold">${p.fiyat} TL</p>
+                <div class="product-card glass rounded-3xl shadow-md cursor-pointer overflow-hidden" onclick="showModal('${p.ürünismi}', '${p.ürünresmiurl}', '${p.fiyat}', '${p.ürünaçıklaması}')">
+                    <img src="${p.ürünresmiurl}" class="w-full h-56 object-cover rounded-t-3xl">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 truncate">${p.ürünismi}</h3>
+                        <p class="text-green-500 text-lg font-bold"><i class="fas fa-lira-sign mr-1"></i>${p.fiyat} TL</p>
+                    </div>
                 </div>
             `).join('');
         }
@@ -100,24 +248,32 @@
         function showModal(title, image, price, description) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalImage').src = image;
-            document.getElementById('modalPrice').innerText = `${price} TL`;
+            document.getElementById('modalPriceValue').innerText = `${price} TL`;
             document.getElementById('modalDescription').innerText = description;
             document.getElementById('productModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden'); // Modal açıldığında scroll'u engelle
         }
 
         function closeModal() {
             document.getElementById('productModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden'); // Scroll'u tekrar aktif et
         }
 
         async function init() {
-            const slider = await fetchData('?sheet=slider');
-            renderSlider(slider);
+            // Splash screen 1.5 saniye gösterildikten sonra içeriği yükle
+            setTimeout(async () => {
+                const slider = await fetchData('?sheet=slider');
+                renderSlider(slider);
 
-            const hotProducts = await fetchData('?sheet=sicakurunler');
-            renderProducts(hotProducts, 'hotProducts');
+                const hotProducts = await fetchData('?sheet=sicakurunler');
+                renderProducts(hotProducts, 'hotProducts');
 
-            const allProducts = await fetchData('?sheet=tumurunler');
-            renderProducts(allProducts, 'allProducts');
+                const allProducts = await fetchData('?sheet=tumurunler');
+                renderProducts(allProducts, 'allProducts');
+
+                splashScreen.classList.add('hidden'); // Splash screen'i kaldır
+            }, 1500); // 1.5 saniye (1500 milisaniye)
+
         }
 
         document.getElementById('searchInput').addEventListener('input', async (e) => {
