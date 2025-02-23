@@ -169,89 +169,18 @@
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <div id="splash-screen">
-        <div class="splash-logo">
-            <i class="fas fa-laptop-code"></i>
-        </div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-    </div>
-
-    <header class="py-16 text-center relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-full">
-            <div class="absolute inset-0 bg-gradient-to-b from-blue-600/20 to-transparent"></div>
-        </div>
-        <div class="relative z-10">
-            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-                Murat Bilgisayar
-            </h1>
-            <p class="text-xl text-blue-200 mb-2">Antalya İkinci El Bilgisayar & Teknik Servis</p>
-            <p class="text-gray-400">Teknolojik, Modern ve Güvenilir Çözümler</p>
-        </div>
-    </header>
-
-    <main class="container mx-auto px-4 pb-16">
-        <section id="search-section" class="mb-12">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1 search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input id="searchInput" type="text" class="search-input" placeholder="Ürün ara...">
-                </div>
-                <select id="categoryFilter" class="search-input md:w-1/4">
-                    <option value="">Tüm Kategoriler</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="Gaming Laptop">Gaming Laptop</option>
-                    <option value="Ekran Kartı">Ekran Kartı</option>
-                    <option value="RAM">RAM</option>
-                    <option value="Anakart">Anakart</option>
-                </select>
-            </div>
-        </section>
-
-        <section id="slider" class="mb-16 rounded-2xl overflow-hidden shadow-2xl">
-        </section>
-
-        <section id="hot-products" class="mb-16">
-            <h2 class="section-title">🔥 Sıcak Ürünler</h2>
-            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            </div>
-        </section>
-
-        <section id="all-products">
-            <h2 class="section-title">💻 Tüm Ürünler</h2>
-            <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            </div>
-        </section>
-    </main>
-
-    <div id="productModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden backdrop-blur-sm z-50">
-        <div class="glass max-w-2xl w-full m-4 p-8 relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
-                <i class="fas fa-times text-2xl"></i>
-            </button>
-            <img id="modalImage" class="w-full h-64 object-cover rounded-xl mb-6" alt="Ürün Görseli">
-            <h3 id="modalTitle" class="text-2xl font-bold mb-4 text-blue-400"></h3>
-            <p id="modalDescription" class="text-gray-300 mb-6 leading-relaxed"></p>
-            <div class="flex items-center justify-between">
-                <p id="modalPrice" class="text-2xl font-bold text-green-400">
-                    <i class="fas fa-tag mr-2"></i><span id="modalPriceValue"></span>
-                </p>
-                <a href="tel:05330277258" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
-                    <i class="fas fa-phone mr-2"></i>Hemen Ara
-                </a>
-            </div>
-        </div>
-    </div>
-
-   <script>
+    <script>
     const API_BASE = 'https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec';
-    const splashScreen = document.getElementById('splash-screen'); // Splash screen elementini al
+    const splashScreen = document.getElementById('splash-screen');
+
+    if (!splashScreen) {
+        console.error('Splash screen elementi bulunamadı!');
+    }
 
     async function fetchData(sheet, search = '', category = '') {
         try {
             const url = `${API_BASE}?sheet=${sheet}${search ? `&search=${search}` : ''}${category ? `&category=${category}` : ''}`;
+            console.log('API URL:', url); // API URL'sini konsola yazdır
             const res = await axios.get(url);
             console.log('API Response:', res.data); // API'den gelen veriyi konsola yazdır
             return res.data;
@@ -337,12 +266,17 @@
                 fetchData('tumurunler')
             ]);
 
+            console.log('Slider Data:', slider); // Slider verisini konsola yazdır
+            console.log('Hot Products:', hotProducts); // Sıcak ürünler verisini konsola yazdır
+            console.log('All Products:', allProducts); // Tüm ürünler verisini konsola yazdır
+
             renderSlider(slider);
             renderProducts(hotProducts, 'hotProducts');
             renderProducts(allProducts, 'allProducts');
         } catch (error) {
             console.error("Veri yükleme hatası:", error);
         } finally {
+            console.log('Splash screen gizleniyor...'); // Splash screen'in gizlendiğini kontrol et
             splashScreen.classList.add('hidden'); // Splash screen'i her durumda gizle
         }
     }
@@ -361,4 +295,79 @@
 
     window.onload = init;
 </script>
-          
+<body class="min-h-screen">
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <i class="fas fa-laptop-code"></i>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <header class="py-16 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute inset-0 bg-gradient-to-b from-blue-600/20 to-transparent"></div>
+        </div>
+        <div class="relative z-10">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                Murat Bilgisayar
+            </h1>
+            <p class="text-xl text-blue-200 mb-2">Antalya İkinci El Bilgisayar & Teknik Servis</p>
+            <p class="text-gray-400">Teknolojik, Modern ve Güvenilir Çözümler</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-16">
+        <section id="search-section" class="mb-12">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input id="searchInput" type="text" class="search-input" placeholder="Ürün ara...">
+                </div>
+                <select id="categoryFilter" class="search-input md:w-1/4">
+                    <option value="">Tüm Kategoriler</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Gaming Laptop">Gaming Laptop</option>
+                    <option value="Ekran Kartı">Ekran Kartı</option>
+                    <option value="RAM">RAM</option>
+                    <option value="Anakart">Anakart</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="slider" class="mb-16 rounded-2xl overflow-hidden shadow-2xl">
+        </section>
+
+        <section id="hot-products" class="mb-16">
+            <h2 class="section-title">🔥 Sıcak Ürünler</h2>
+            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            </div>
+        </section>
+
+        <section id="all-products">
+            <h2 class="section-title">💻 Tüm Ürünler</h2>
+            <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            </div>
+        </section>
+    </main>
+
+    <div id="productModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden backdrop-blur-sm z-50">
+        <div class="glass max-w-2xl w-full m-4 p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <img id="modalImage" class="w-full h-64 object-cover rounded-xl mb-6" alt="Ürün Görseli">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4 text-blue-400"></h3>
+            <p id="modalDescription" class="text-gray-300 mb-6 leading-relaxed"></p>
+            <div class="flex items-center justify-between">
+                <p id="modalPrice" class="text-2xl font-bold text-green-400">
+                    <i class="fas fa-tag mr-2"></i><span id="modalPriceValue"></span>
+                </p>
+                <a href="tel:05330277258" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-phone mr-2"></i>Hemen Ara
+                </a>
+            </div>
+        </div>
+    </div>
+
