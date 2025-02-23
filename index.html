@@ -9,144 +9,197 @@
     <meta name="theme-color" content="#1e293b">
     <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
     <style>
         body {
             background-color: #0f172a;
             color: #f1f5f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Daha modern font */
-            overflow-x: hidden; /* Yatay kaymayı önler */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Splash Screen Stilleri */
+        .glass {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(30, 41, 59, 0.7);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            transition: all 0.3s ease;
+        }
+
+        .glass:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(45deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, #60a5fa, #3b82f6);
+            border-radius: 3px;
+        }
+
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            border-radius: 1rem;
+            color: #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
         #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background-color: #0f172a;
+            background: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000; /* En üstte görünmesi için */
+            z-index: 9999;
             flex-direction: column;
         }
 
         .splash-logo {
-            width: 150px; /* Logo boyutunu ayarlayın */
-            margin-bottom: 20px;
-            animation: pulse 2s infinite; /* Logo için nabız animasyonu */
-        }
-
-        .splash-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #f1f5f9;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .splash-logo i {
+            font-size: 4rem;
+            color: white;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
+            0% { transform: scale(1); }
             50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-
-        .glass {
-            backdrop-filter: blur(16px) saturate(180%);
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 1.25rem; /* Daha yuvarlak */
-            border: 1px solid rgba(255, 255, 255, 0.125);
-            padding: 1.5rem; /* İç boşluk arttırıldı */
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .product-card:hover {
-            transform: scale(1.03); /* Daha az büyüme */
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Yumuşak geçiş ve gölge */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Hover efekti için gölge */
+        .loading-progress {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            animation: loading 1.5s infinite;
+            transform-origin: left;
         }
 
-        ::-webkit-scrollbar { width: 10px; } /* Scrollbar genişliği */
-        ::-webkit-scrollbar-thumb {
-            background-color: #64748b;
-            border-radius: 12px; /* Daha yuvarlak scrollbar */
-            border: 3px solid #0f172a; /* Scrollbar ve arkaplan arasında boşluk */
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+            100% { transform: scaleX(0); }
         }
-        ::-webkit-scrollbar-track {
-            background-color: #0f172a; /* Scrollbar yolu rengi */
-        }
-
-        /* Modal Stilleri */
-        #productModal .glass {
-            padding: 2rem;
-        }
-        #productModal button {
-            color: #6b7280; /* Daha yumuşak kapatma butonu rengi */
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        #productModal button:hover {
-            opacity: 1;
-        }
-
-        /* Arama ve Filtreleme Input Stilleri */
-        #searchInput, #categoryFilter {
-            background-color: #1e293b;
-            border: 1px solid #334155; /* Daha belirgin kenarlık */
-            color: #f1f5f9;
-            padding: 1rem; /* İç boşluk */
-            border-radius: 0.75rem;
-            transition: border-color 0.2s;
-        }
-
-        #searchInput:focus, #categoryFilter:focus {
-            border-color: #f1f5f9; /* Odaklandığında kenarlık rengi */
-            outline: none; /* Tarayıcı varsayılan odağı kaldırır */
-            box-shadow: 0 0 0 2px rgba(241, 245, 249, 0.2); /* Yumuşak odak gölgesi */
-        }
-
-
     </style>
 </head>
-<body class="min-h-screen font-sans antialiased">
-
+<body class="min-h-screen">
     <div id="splash-screen">
-        <img src="https://via.placeholder.com/150" alt="Murat Bilgisayar Logo" class="splash-logo">
-        <div class="splash-spinner"></div>
+        <div class="splash-logo">
+            <i class="fas fa-laptop-code"></i>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
     </div>
-    <header class="text-center py-12">
-        <h1 class="text-4xl font-extrabold tracking-tight text-white">
-            <i class="fas fa-laptop-code mr-2"></i> Murat Bilgisayar
-        </h1>
-        <p class="mt-3 text-xl text-gray-300 italic">Antalya İkinci El Bilgisayar & Teknik Servis</p>
-        <p class="text-lg mt-1 text-gray-400">Teknolojik, modern ve güvenilir çözümler.</p>
+
+    <header class="py-16 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute inset-0 bg-gradient-to-b from-blue-600/20 to-transparent"></div>
+        </div>
+        <div class="relative z-10">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                Murat Bilgisayar
+            </h1>
+            <p class="text-xl text-blue-200 mb-2">Antalya İkinci El Bilgisayar & Teknik Servis</p>
+            <p class="text-gray-400">Teknolojik, Modern ve Güvenilir Çözümler</p>
+        </div>
     </header>
 
-    <main class="container mx-auto px-6 pb-12">
-
-        <section id="slider" class="w-full overflow-hidden rounded-3xl shadow-md mb-12">
-            </section>
-
-        <div class="flex flex-col md:flex-row justify-between items-center mb-10 space-y-4 md:space-y-0 md:space-x-4">
-            <div class="relative w-full md:w-1/2">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-500"></i>
+    <main class="container mx-auto px-4 pb-16">
+        <section id="search-section" class="mb-12">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input id="searchInput" type="text" class="search-input" placeholder="Ürün ara...">
                 </div>
-                <input id="searchInput" type="text" class="pl-10 w-full" placeholder="Ürün Ara...">
-            </div>
-            <div class="w-full md:w-1/4">
-                <select id="categoryFilter" class="w-full">
+                <select id="categoryFilter" class="search-input md:w-1/4">
                     <option value="">Tüm Kategoriler</option>
                     <option value="Laptop">Laptop</option>
                     <option value="Gaming Laptop">Gaming Laptop</option>
@@ -155,48 +208,54 @@
                     <option value="Anakart">Anakart</option>
                 </select>
             </div>
-        </div>
-
-
-        <section id="hot-products-section">
-            <h2 class="section-title">🔥 Sıcak Ürünler</h2>
-            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                </div>
         </section>
 
-        <section id="all-products-section" class="mt-16">
+        <section id="slider" class="mb-16 rounded-2xl overflow-hidden shadow-2xl">
+        </section>
+
+        <section id="hot-products" class="mb-16">
+            <h2 class="section-title">🔥 Sıcak Ürünler</h2>
+            <div id="hotProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            </div>
+        </section>
+
+        <section id="all-products">
             <h2 class="section-title">💻 Tüm Ürünler</h2>
             <div id="allProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                </div>
+            </div>
         </section>
     </main>
 
-    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
-        <div class="bg-white text-black rounded-3xl p-8 max-w-lg w-full relative glass">
-            <button onclick="closeModal()" class="absolute top-3 right-3">
-                <i class="fas fa-times-circle"></i>
+    <div id="productModal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden backdrop-blur-sm z-50">
+        <div class="glass max-w-2xl w-full m-4 p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-2xl"></i>
             </button>
-            <img id="modalImage" class="rounded-2xl w-full mb-6" alt="Ürün Görseli">
-            <h3 id="modalTitle" class="text-3xl font-bold mb-3"></h3>
-            <p id="modalDescription" class="text-gray-700 leading-relaxed"></p>
-            <p id="modalPrice" class="text-2xl font-semibold text-green-700 mt-5">
-                <i class="fas fa-tag mr-1"></i> <span id="modalPriceValue"></span>
-            </p>
-            <p class="text-sm text-gray-500 mt-2">
-                <a href="tel:05330277258" class="text-blue-600 hover:underline">
-                    <i class="fas fa-phone mr-1"></i> Detaylı bilgi için arayın!
+            <img id="modalImage" class="w-full h-64 object-cover rounded-xl mb-6" alt="Ürün Görseli">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4 text-blue-400"></h3>
+            <p id="modalDescription" class="text-gray-300 mb-6 leading-relaxed"></p>
+            <div class="flex items-center justify-between">
+                <p id="modalPrice" class="text-2xl font-bold text-green-400">
+                    <i class="fas fa-tag mr-2"></i><span id="modalPriceValue"></span>
+                </p>
+                <a href="tel:05330277258" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-phone mr-2"></i>Hemen Ara
                 </a>
-            </p>
+            </div>
         </div>
     </div>
 
     <script>
         const API_BASE = 'https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec';
-        const splashScreen = document.getElementById('splash-screen');
 
         async function fetchData(endpoint) {
-            const res = await axios.get(`${API_BASE}${endpoint}`);
-            return res.data;
+            try {
+                const res = await axios.get(`${API_BASE}?${endpoint}`);
+                return res.data;
+            } catch (error) {
+                console.error('API Hatası:', error);
+                return [];
+            }
         }
 
         function renderSlider(sliderData) {
@@ -205,14 +264,15 @@
                 slider.innerHTML = '<p class="text-center py-10">Slider içeriği bulunamadı.</p>';
                 return;
             }
+
             const sliderInner = document.createElement('div');
-            sliderInner.className = 'relative w-full h-72 rounded-3xl overflow-hidden';
+            sliderInner.className = 'relative w-full h-96';
             slider.appendChild(sliderInner);
 
             sliderData.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url.fotoğrafurl;
-                img.className = 'w-full h-72 object-cover absolute transition-opacity duration-500 opacity-0';
+                img.className = 'w-full h-96 object-cover absolute transition-opacity duration-500 opacity-0';
                 sliderInner.appendChild(img);
             });
 
@@ -224,9 +284,8 @@
                 slides[slideIndex].classList.remove('opacity-100');
                 slideIndex = (slideIndex + 1) % slides.length;
                 slides[slideIndex].classList.add('opacity-100');
-            }, 5000); // 5 saniyede bir değişir
+            }, 5000);
         }
-
 
         function renderProducts(products, containerId) {
             const container = document.getElementById(containerId);
@@ -234,12 +293,20 @@
                 container.innerHTML = '<p class="text-center col-span-full py-6">Ürün bulunamadı.</p>';
                 return;
             }
+
             container.innerHTML = products.map(p => `
-                <div class="product-card glass rounded-3xl shadow-md cursor-pointer overflow-hidden" onclick="showModal('${p.ürünismi}', '${p.ürünresmiurl}', '${p.fiyat}', '${p.ürünaçıklaması}')">
-                    <img src="${p.ürünresmiurl}" class="w-full h-56 object-cover rounded-t-3xl">
+                <div class="product-card glass cursor-pointer" onclick="showModal('${p.ürünismi}', '${p.ürünresmiurl}', '${p.fiyat}', '${p.ürünaçıklaması}')">
+                    <img src="${p.ürünresmiurl}" class="w-full h-48 object-cover rounded-t-xl" alt="${p.ürünismi}">
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 truncate">${p.ürünismi}</h3>
-                        <p class="text-green-500 text-lg font-bold"><i class="fas fa-lira-sign mr-1"></i>${p.fiyat} TL</p>
+                        <h3 class="text-lg font-semibold mb-2 text-blue-400">${p.ürünismi}</h3>
+                        <p class="text-green-400 font-bold">
+                            <i class="fas fa-tag mr-2"></i>${p.fiyat} TL
+                        </p>
+                    </div>
+                    <div class="product-overlay">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                            Detayları Gör
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -251,70 +318,19 @@
             document.getElementById('modalPriceValue').innerText = `${price} TL`;
             document.getElementById('modalDescription').innerText = description;
             document.getElementById('productModal').classList.remove('hidden');
-            document.body.classList.add('overflow-hidden'); // Modal açıldığında scroll'u engelle
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
             document.getElementById('productModal').classList.add('hidden');
-            document.body.classList.remove('overflow-hidden'); // Scroll'u tekrar aktif et
+            document.body.style.overflow = 'auto';
         }
 
-      async function init() {
-    try {
-        // Minimum gösterim süresi için Promise
-        const minDisplayPromise = new Promise(resolve => 
-            setTimeout(resolve, 1500)); // 1.5 saniye minimum gösterim
-
-        // Tüm veri çekme işlemlerini parallel yapma
-        const [slider, hotProducts, allProducts] = await Promise.all([
-            fetchData('?sheet=slider'),
-            fetchData('?sheet=sicakurunler'),
-            fetchData('?sheet=tumurunler'),
-            minDisplayPromise // Minimum gösterim süresini bekle
-        ]);
-
-        // Verileri render et
-        renderSlider(slider);
-        renderProducts(hotProducts, 'hotProducts');
-        renderProducts(allProducts, 'allProducts');
-
-    } catch (error) {
-        console.error('Veri yüklenirken hata oluştu:', error);
-        // Hata durumunda kullanıcıya bilgi ver
-        document.getElementById('hotProducts').innerHTML = 
-            '<p class="text-center col-span-full py-6">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>';
-    } finally {
-        // Her durumda splash screen'i kaldır
-        splashScreen.classList.add('hidden');
-    }
-}
-
-// fetchData fonksiyonuna hata yönetimi ekle
-async function fetchData(endpoint) {
-    try {
-        console.log('API çağrısı yapılıyor:', `${API_BASE}${endpoint}`); // API çağrısını logla
-        const res = await axios.get(`${API_BASE}${endpoint}`);
-        console.log('API yanıtı:', res.data); // API yanıtını logla
-        return res.data;
-    } catch (error) {
-        console.error(`API hatası (${endpoint}):`, error); // Hata detayını logla
-        // Geçici test datası döndür
-        return [];
-    }
-}
-        document.getElementById('searchInput').addEventListener('input', async (e) => {
-            const searchValue = e.target.value;
-            const allProducts = await fetchData(`?sheet=tumurunler&search=${searchValue}`);
-            renderProducts(allProducts, 'allProducts');
-        });
-
-        document.getElementById('categoryFilter').addEventListener('change', async (e) => {
-            const category = e.target.value;
-            const allProducts = await fetchData(`?sheet=tumurunler&category=${category}`);
-            renderProducts(allProducts, 'allProducts');
-        });
-
-        window.onload = init;
-    </script>
-</body>
-</html>
+        async function init() {
+            try {
+                const [slider, hotProducts, allProducts] = await Promise.all([
+                    fetchData('sheet=slider'),
+                    fetchData('sheet=sicakurunler'),
+                    fetchData('sheet=tumurunler')
+                ]); 
+            </script>
