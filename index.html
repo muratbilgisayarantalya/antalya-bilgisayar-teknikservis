@@ -279,6 +279,11 @@
             console.log('Splash screen gizleniyor...'); // Splash screen'in gizlendiğini kontrol et
             splashScreen.classList.add('hidden'); // Splash screen'i her durumda gizle
         }
+          // 5 saniye sonra splash screen'i zorla gizle
+    setTimeout(() => {
+        splashScreen.classList.add('hidden');
+    }, 1000);
+}
     }
 
     document.getElementById('searchInput').addEventListener('input', async (e) => {
