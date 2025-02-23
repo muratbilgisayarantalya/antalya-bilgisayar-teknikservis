@@ -259,23 +259,46 @@
             document.body.classList.remove('overflow-hidden'); // Scroll'u tekrar aktif et
         }
 
-        async function init() {
-            // Splash screen 1.5 saniye gösterildikten sonra içeriği yükle
-            setTimeout(async () => {
-                const slider = await fetchData('?sheet=slider');
-                renderSlider(slider);
+      async function init() {
+    try {
+        // Minimum gösterim süresi için Promise
+        const minDisplayPromise = new Promise(resolve => 
+            setTimeout(resolve, 1500)); // 1.5 saniye minimum gösterim
 
-                const hotProducts = await fetchData('?sheet=sicakurunler');
-                renderProducts(hotProducts, 'hotProducts');
+        // Tüm veri çekme işlemlerini parallel yapma
+        const [slider, hotProducts, allProducts] = await Promise.all([
+            fetchData('?sheet=slider'),
+            fetchData('?sheet=sicakurunler'),
+            fetchData('?sheet=tumurunler'),
+            minDisplayPromise // Minimum gösterim süresini bekle
+        ]);
 
-                const allProducts = await fetchData('?sheet=tumurunler');
-                renderProducts(allProducts, 'allProducts');
+        // Verileri render et
+        renderSlider(slider);
+        renderProducts(hotProducts, 'hotProducts');
+        renderProducts(allProducts, 'allProducts');
 
-                splashScreen.classList.add('hidden'); // Splash screen'i kaldır
-            }, 3500); // 1.5 saniye (1500 milisaniye)
+    } catch (error) {
+        console.error('Veri yüklenirken hata oluştu:', error);
+        // Hata durumunda kullanıcıya bilgi ver
+        document.getElementById('hotProducts').innerHTML = 
+            '<p class="text-center col-span-full py-6">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>';
+    } finally {
+        // Her durumda splash screen'i kaldır
+        splashScreen.classList.add('hidden');
+    }
+}
 
-        }
-
+// fetchData fonksiyonuna hata yönetimi ekle
+async function fetchData(endpoint) {
+    try {
+        const res = await axios.get(`${API_BASE}${endpoint}`);
+        return res.data;
+    } catch (error) {
+        console.error(`API çağrısı başarısız (${endpoint}):`, error);
+        throw error; // Hatayı yukarı ilet
+    }
+}
         document.getElementById('searchInput').addEventListener('input', async (e) => {
             const searchValue = e.target.value;
             const allProducts = await fetchData(`?sheet=tumurunler&search=${searchValue}`);
