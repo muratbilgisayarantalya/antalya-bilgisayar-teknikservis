@@ -14,10 +14,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        :root {
-            --animate-duration: 0.3s;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
             @apply bg-gradient-to-br from-slate-50 to-purple-50;
@@ -26,30 +22,10 @@
         .modal {
             @apply fixed inset-0 bg-black/50 z-[999] hidden items-center justify-center;
             backdrop-filter: blur(5px);
-            animation: fadeIn var(--animate-duration) ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            @apply bg-white rounded-xl p-6 max-w-[95%] md:max-w-2xl w-full relative;
-            animation: slideIn var(--animate-duration) ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .product-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        #slider-container::-webkit-scrollbar {
-            @apply h-2;
+        .product-card img {
+            transition: transform 0.3s ease;
         }
     </style>
 </head>
@@ -66,39 +42,26 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="container mx-auto px-4 py-16 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
-            Antalya'nın En Kaliteli <span class="text-indigo-600">Bilgisayar</span> Mağazası
-        </h1>
-    </header>
-
-    <!-- Slider -->
-    <section id="slider" class="container mx-auto px-4 mb-16">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold">Son Kampanyalar</h2>
-            <div class="flex gap-2">
-                <button class="slider-prev px-3 py-1 bg-white rounded-full shadow-md">
-                    <i class="fas fa-chevron-left text-indigo-600"></i>
-                </button>
-                <button class="slider-next px-3 py-1 bg-white rounded-full shadow-md">
-                    <i class="fas fa-chevron-right text-indigo-600"></i>
-                </button>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Slider -->
+        <section id="slider" class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Kampanyalar</h2>
+                <div class="flex gap-2">
+                    <button class="slider-prev px-3 py-1 bg-white rounded-full shadow-md">
+                        <i class="fas fa-chevron-left text-indigo-600"></i>
+                    </button>
+                    <button class="slider-next px-3 py-1 bg-white rounded-full shadow-md">
+                        <i class="fas fa-chevron-right text-indigo-600"></i>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div id="slider-container" class="flex overflow-x-auto snap-x gap-4 pb-4"></div>
-    </section>
-
-    <!-- Products Section -->
-    <main class="container mx-auto px-4">
-        <!-- Hot Products -->
-        <section id="hot-products" class="mb-16">
-            <h2 class="text-2xl font-bold mb-6">Öne Çıkan Ürünler 🔥</h2>
-            <div id="hot-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="slider-container" class="flex overflow-x-auto snap-x gap-4 pb-4"></div>
         </section>
 
-        <!-- All Products -->
-        <section id="all-products">
+        <!-- Products -->
+        <section id="products">
             <div class="mb-8 flex flex-col md:flex-row gap-4">
                 <input type="text" id="search" placeholder="Ürün ara..." 
                        class="flex-1 px-4 py-2 rounded-full border focus:ring-2 focus:ring-indigo-600">
@@ -106,49 +69,51 @@
                     <option value="all">Tüm Kategoriler</option>
                 </select>
             </div>
-            <div id="all-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
     </main>
 
-    <!-- Product Modal -->
+    <!-- Modal -->
     <div id="productModal" class="modal">
-        <div class="modal-content">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full relative mx-4">
             <button class="modal-close absolute -top-4 -right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100">
                 <i class="fas fa-times text-xl text-gray-600"></i>
             </button>
-            <div id="modalContent" class="grid md:grid-cols-2 gap-8"></div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxq_V0VUaQqzjoqtLrNx9rlL7T7QPY2m37P_Kh6a6uFc8waHZYfasUiNv62EdzG7kcr/exec';
+        
+        // Veri Yönetimi
         let allProducts = [];
+        let currentProducts = [];
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        async function initApp() {
             try {
-                const [sliderRes, hotRes, allRes] = await Promise.all([
-                    fetch(`${API_URL}?sheet=slider`),
-                    fetch(`${API_URL}?sheet=sicakurunler`),
-                    fetch(`${API_URL}?sheet=tumurunler`)
+                const [products, slider] = await Promise.all([
+                    fetchData('tumurunler'),
+                    fetchData('slider')
                 ]);
 
-                const [sliderData, hotProducts, allProductsData] = await Promise.all([
-                    sliderRes.json(),
-                    hotRes.json(),
-                    allRes.json()
-                ]);
-
-                allProducts = allProductsData;
+                allProducts = products;
+                currentProducts = products;
                 
-                renderSlider(sliderData);
-                renderProducts(hotProducts, 'hot-products-container');
-                initFilters(allProductsData);
-                renderProducts(allProductsData, 'all-products-container');
+                renderSlider(slider);
+                renderProducts(products);
+                initFilters();
                 
             } catch (error) {
-                showError('Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
+                showError('Veri yüklenirken bir hata oluştu');
             }
-        });
+        }
+
+        async function fetchData(sheet) {
+            const res = await fetch(`${API_URL}?sheet=${sheet}&t=${Date.now()}`);
+            if(!res.ok) throw new Error(res.statusText);
+            return await res.json();
+        }
 
         // Render Functions
         function renderSlider(data) {
@@ -183,12 +148,12 @@
             });
         }
 
-        function renderProducts(products, containerId) {
-            const container = document.getElementById(containerId);
+        function renderProducts(products) {
+            const container = document.getElementById('products-container');
             container.innerHTML = products.map(product => `
                 <div class="product-card bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
                     <div class="aspect-square mb-4 rounded-lg overflow-hidden">
-                        <img src="${product.ürünresmiurl’si || 'https://via.placeholder.com/400'}" 
+                        <img src="${product.ürünresmiurl’si}" 
                              class="w-full h-full object-contain"
                              loading="lazy">
                     </div>
@@ -214,63 +179,49 @@
             const product = allProducts.find(p => p.id == productId);
             if(!product) return;
 
-            document.body.style.overflow = 'hidden';
-            document.getElementById('productModal').style.display = 'flex';
-
-            const modalContent = `
-                <div class="md:col-span-1">
-                    <img src="${product.ürünresmiurl’si}" 
-                         class="w-full h-64 object-contain rounded-lg">
-                </div>
-                <div class="space-y-4">
-                    <h2 class="text-2xl font-bold">${product.ürüni̇smi}</h2>
-                    <div class="text-xl font-bold text-indigo-600">
-                        ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
+            document.getElementById('modalContent').innerHTML = `
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="md:col-span-1">
+                        <img src="${product.ürünresmiurl’si}" 
+                             class="w-full h-64 object-contain rounded-lg">
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full">
-                            ${product.kategori}
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-bold">${product.ürüni̇smi}</h2>
+                        <div class="text-xl font-bold text-indigo-600">
+                            ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
                         </div>
-                        ${product.durum ? `<div class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                            ${product.durum}
-                        </div>` : ''}
-                    </div>
-                    <p class="text-gray-600">${product.ürünaçıklaması}</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        ${product.marka ? `
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <div class="text-sm text-gray-500">Marka</div>
-                            <div>${product.marka}</div>
-                        </div>` : ''}
-                        ${product.garanti ? `
-                        <div class="bg-gray-50 p-3 rounded-lg">
-                            <div class="text-sm text-gray-500">Garanti</div>
-                            <div>${product.garanti}</div>
-                        </div>` : ''}
+                        <div class="flex flex-wrap gap-2">
+                            <div class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full">
+                                ${product.kategori}
+                            </div>
+                            ${product.durum ? `<div class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+                                ${product.durum}
+                            </div>` : ''}
+                        </div>
+                        <p class="text-gray-600">${product.ürünaçıklaması}</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            ${product.marka ? `
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-sm text-gray-500">Marka</div>
+                                <div>${product.marka}</div>
+                            </div>` : ''}
+                            ${product.garanti ? `
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-sm text-gray-500">Garanti</div>
+                                <div>${product.garanti}</div>
+                            </div>` : ''}
+                        </div>
                     </div>
                 </div>
             `;
 
-            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('productModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-        // Modal Functions
-        function closeModal() {
-            document.body.style.overflow = 'auto';
-            document.getElementById('productModal').style.display = 'none';
-        }
-
-        document.querySelectorAll('.modal-close, #productModal').forEach(element => {
-            element.addEventListener('click', (e) => {
-                if(e.target === element || element.classList.contains('modal-close')) {
-                    closeModal();
-                }
-            });
-        });
-
-        // Filter Functions
-        function initFilters(products) {
-            const categories = [...new Set(products.map(p => p.kategori))].filter(Boolean);
+        // Diğer Fonksiyonlar
+        function initFilters() {
+            const categories = [...new Set(allProducts.map(p => p.kategori))].filter(Boolean);
             const filterSelect = document.getElementById('category-filter');
             
             categories.forEach(cat => {
@@ -288,25 +239,37 @@
             const searchTerm = document.getElementById('search').value.toLowerCase();
             const category = document.getElementById('category-filter').value;
             
-            const filtered = allProducts.filter(product => {
+            currentProducts = allProducts.filter(product => {
                 const matchesSearch = product.ürüni̇smi.toLowerCase().includes(searchTerm);
                 const matchesCategory = category === 'all' || product.kategori === category;
                 return matchesSearch && matchesCategory;
             });
 
-            renderProducts(filtered, 'all-products-container');
+            renderProducts(currentProducts);
         }
 
-        // Error Handling
         function showError(message) {
             const errorDiv = document.createElement('div');
-            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded animate-fadeIn';
+            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
             errorDiv.innerHTML = `
                 <strong>Hata!</strong> ${message}
                 <button onclick="this.parentElement.remove()" class="ml-4">×</button>
             `;
             document.body.appendChild(errorDiv);
         }
+
+        // Uygulamayı Başlat
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Modal Kapatma
+        document.querySelectorAll('.modal-close, #productModal').forEach(element => {
+            element.addEventListener('click', (e) => {
+                if(e.target === element || element.classList.contains('modal-close')) {
+                    document.getElementById('productModal').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
     </script>
 </body>
 </html>
