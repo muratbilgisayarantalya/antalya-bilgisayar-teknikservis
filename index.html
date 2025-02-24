@@ -9,9 +9,8 @@
     <meta name="author" content="Murat Bilgisayar">
     <meta name="theme-color" content="#6366f1">
     <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -20,228 +19,259 @@
             @apply bg-gradient-to-br from-slate-50 to-purple-50;
         }
 
-        .gradient-bg {
-            @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+        .modal {
+            @apply fixed inset-0 bg-black/50 z-50 hidden items-start justify-center pt-20;
+            backdrop-filter: blur(5px);
         }
 
-        .product-card {
-            @apply transition-all duration-300 hover:-translate-y-2;
-            box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.1);
-        }
-
-        .slider-item {
-            scroll-snap-align: start;
+        .product-card img {
+            transition: transform 0.3s ease;
         }
 
         #slider-container::-webkit-scrollbar {
             @apply h-2;
         }
-
-        #slider-container::-webkit-scrollbar-track {
-            @apply bg-slate-100 rounded-full;
-        }
-
-        #slider-container::-webkit-scrollbar-thumb {
-            @apply bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full;
-        }
     </style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="gradient-bg text-white sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="#" class="text-2xl font-bold tracking-tight">Murat Bilgisayar</a>
-            <div class="space-x-6 hidden md:flex">
-                <a href="#slider" class="hover:text-indigo-200">Öne Çıkanlar</a>
-                <a href="#hot-products" class="hover:text-indigo-200">Sıcak Ürünler</a>
-                <a href="#all-products" class="hover:text-indigo-200">Tüm Ürünler</a>
+    <!-- Navbar -->
+    <nav class="bg-indigo-600 text-white sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="#" class="text-xl font-bold">Murat Bilgisayar</a>
+            <div class="flex gap-6">
+                <a href="#slider" class="hover:text-indigo-200">Kampanyalar</a>
+                <a href="#hot-products" class="hover:text-indigo-200">Öne Çıkanlar</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <header class="container mx-auto px-4 py-16 text-center">
-        <h1 class="text-5xl font-bold text-slate-800 mb-6">
-            Antalya'nın En Güvenilir <span class="text-indigo-600">Bilgisayar</span> Mağazası
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            Antalya'nın En Kaliteli <span class="text-indigo-600">Bilgisayar</span> Mağazası
         </h1>
-        <p class="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-            Uygun fiyatlı ikinci el bilgisayarlar ve profesyonel teknik servis hizmetiyle hizmetinizdeyiz.
-        </p>
     </header>
 
     <!-- Slider -->
-    <section id="slider" class="container mx-auto px-4 py-12">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-3xl font-bold text-slate-800">Öne Çıkan Ürünler</h2>
-            <div class="space-x-4">
-                <button class="slider-arrow px-3 py-1 rounded-full bg-white shadow-md">
+    <section id="slider" class="container mx-auto px-4 mb-16">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Son Kampanyalar</h2>
+            <div class="flex gap-2">
+                <button class="slider-prev px-3 py-1 bg-white rounded-full shadow-md">
                     <i class="fas fa-chevron-left text-indigo-600"></i>
                 </button>
-                <button class="slider-arrow px-3 py-1 rounded-full bg-white shadow-md">
+                <button class="slider-next px-3 py-1 bg-white rounded-full shadow-md">
                     <i class="fas fa-chevron-right text-indigo-600"></i>
                 </button>
             </div>
         </div>
-        <div id="slider-container" class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6"></div>
+        <div id="slider-container" class="flex overflow-x-auto snap-x gap-4 pb-4"></div>
     </section>
 
-    <!-- Hot Products -->
-    <section id="hot-products" class="container mx-auto px-4 py-12 bg-white/50 backdrop-blur-lg">
-        <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">Sıcak Ürünler 🔥</h2>
-        <div id="hot-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-    </section>
+    <!-- Ürünler -->
+    <main class="container mx-auto px-4">
+        <!-- Hot Products -->
+        <section id="hot-products" class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Öne Çıkan Ürünler 🔥</h2>
+            <div id="hot-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
 
-    <!-- All Products -->
-    <section id="all-products" class="container mx-auto px-4 py-12">
-        <div class="max-w-2xl mx-auto mb-12">
-            <div class="relative">
+        <!-- All Products -->
+        <section id="all-products">
+            <div class="mb-8 flex flex-col md:flex-row gap-4">
                 <input type="text" id="search" placeholder="Ürün ara..." 
-                       class="w-full px-6 py-3 rounded-full border-0 shadow-lg focus:ring-2 focus:ring-indigo-600">
-                <select id="category-filter" 
-                        class="absolute right-3 top-2 bg-white px-4 py-2 rounded-full shadow-sm border-0 focus:ring-2 focus:ring-indigo-600">
+                       class="flex-1 px-4 py-2 rounded-full border focus:ring-2 focus:ring-indigo-600">
+                <select id="category-filter" class="px-4 py-2 rounded-full border">
                     <option value="all">Tüm Kategoriler</option>
                 </select>
             </div>
+            <div id="all-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="productModal" class="modal">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
+            <button class="absolute top-4 right-4 text-2xl text-gray-500">&times;</button>
+            <div id="modalContent" class="grid md:grid-cols-2 gap-8"></div>
         </div>
-        <div id="all-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-    </section>
+    </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const API_BASE = 'https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=';
-            
-            // Slider Navigation
-            let sliderPosition = 0;
-            const sliderContainer = document.getElementById('slider-container');
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxq_V0VUaQqzjoqtLrNx9rlL7T7QPY2m37P_Kh6a6uFc8waHZYfasUiNv62EdzG7kcr/exec';
+        let allProducts = [];
 
-            // Fetch Data with Error Handling
-            async function fetchData() {
-                try {
-                    const [sliderRes, hotRes, allRes] = await Promise.all([
-                        fetch(`${API_BASE}${encodeURIComponent('slider')}`),
-                        fetch(`${API_BASE}${encodeURIComponent('sicakurunler')}`),
-                        fetch(`${API_BASE}${encodeURIComponent('tumurunler')}`)
-                    ]);
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const [sliderRes, hotRes, allRes] = await Promise.all([
+                    fetch(`${API_URL}?sheet=slider`),
+                    fetch(`${API_URL}?sheet=sicakurunler`),
+                    fetch(`${API_URL}?sheet=tumurunler`)
+                ]);
 
-                    if (!sliderRes.ok || !hotRes.ok || !allRes.ok) throw new Error('API Error');
+                const [sliderData, hotProducts, allProductsData] = await Promise.all([
+                    sliderRes.json(),
+                    hotRes.json(),
+                    allRes.json()
+                ]);
 
-                    const [sliderData, hotProductsData, allProductsData] = await Promise.all([
-                        sliderRes.json(),
-                        hotRes.json(),
-                        allRes.json()
-                    ]);
-
-                    renderSlider(sliderData);
-                    renderHotProducts(hotProductsData);
-                    renderAllProducts(allProductsData);
-
-                } catch (error) {
-                    console.error('API Error:', error);
-                    showError('Ürün bilgileri yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.');
-                }
-            }
-
-            function showError(message) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
-                errorDiv.innerHTML = `
-                    <strong>Hata!</strong> ${message}
-                    <button onclick="this.parentElement.remove()" class="ml-4 text-red-900">×</button>
-                `;
-                document.body.appendChild(errorDiv);
-            }
-
-            // Product Card Template
-            function createProductCard(item) {
-                return `
-                    <div class="product-card bg-white rounded-xl p-6">
-                        <div class="relative mb-4 rounded-lg overflow-hidden aspect-square">
-                            <img src="${item['ürünresmiurl’si'] || 'https://via.placeholder.com/400'}" 
-                                 alt="${item['ürüni̇smi']}" 
-                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                 loading="lazy">
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2">${item['ürüni̇smi']}</h3>
-                        <p class="text-gray-600 mb-3">${item['ürünaçıklaması']}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xl font-bold text-indigo-600">
-                                ${new Intl.NumberFormat('tr-TR').format(item['fiyat(tl)'])} TL
-                            </span>
-                            <button class="px-4 py-2 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200">
-                                Detaylar <i class="fas fa-arrow-right ml-2"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Slider Render
-            function renderSlider(data) {
-                sliderContainer.innerHTML = data.map(item => `
-                    <div class="slider-item min-w-[85%] md:min-w-[45%] xl:min-w-[30%]">
-                        <div class="relative group rounded-2xl overflow-hidden">
-                            <img src="${item['fotoğrafurl’si'] || 'https://via.placeholder.com/800x400'}" 
-                                 alt="Slider" 
-                                 class="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
-                                 loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent p-6 flex items-end">
-                                ${item.baslik ? `<h3 class="text-2xl font-bold text-white">${item.baslik}</h3>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Hot Products Render
-            function renderHotProducts(data) {
-                document.getElementById('hot-products-container').innerHTML = data.map(createProductCard).join('');
-            }
-
-            // All Products Render
-            function renderAllProducts(data) {
-                const categories = [...new Set(data.map(item => item.kategori?.trim()))].filter(Boolean);
-                const categoryFilter = document.getElementById('category-filter');
+                allProducts = allProductsData;
                 
-                // Kategori Filtreleme
-                categories.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat;
-                    option.textContent = cat;
-                    categoryFilter.appendChild(option);
-                });
-
-                // Filtreleme Fonksiyonu
-                const filterProducts = () => {
-                    const searchTerm = document.getElementById('search').value.toLowerCase();
-                    const selectedCategory = categoryFilter.value;
-
-                    const filtered = data.filter(item => {
-                        const nameMatch = item['ürüni̇smi'].toLowerCase().includes(searchTerm);
-                        const categoryMatch = selectedCategory === 'all' || item.kategori === selectedCategory;
-                        return nameMatch && categoryMatch;
-                    });
-
-                    document.getElementById('all-products-container').innerHTML = filtered.map(createProductCard).join('');
-                };
-
-                // Event Listeners
-                document.getElementById('search').addEventListener('input', filterProducts);
-                categoryFilter.addEventListener('change', filterProducts);
-                filterProducts();
+                renderSlider(sliderData);
+                renderProducts(hotProducts, 'hot-products-container');
+                initFilters(allProductsData);
+                renderProducts(allProductsData, 'all-products-container');
+                
+            } catch (error) {
+                console.error('API Hatası:', error);
+                showError('Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
             }
+        });
 
-            // Slider Arrows
-            document.querySelectorAll('.slider-arrow').forEach((btn, index) => {
-                btn.addEventListener('click', () => {
-                    const sliderWidth = sliderContainer.offsetWidth;
-                    sliderPosition += index ? sliderWidth : -sliderWidth;
-                    sliderContainer.scrollTo({ left: sliderPosition, behavior: 'smooth' });
-                });
+        // Render Functions
+        function renderSlider(data) {
+            const container = document.getElementById('slider-container');
+            container.innerHTML = data.map(item => `
+                <div class="flex-none snap-start w-[85%]">
+                    <div class="relative rounded-xl overflow-hidden h-64">
+                        <img src="${item['fotoğrafurl’si']}" 
+                             class="w-full h-full object-cover"
+                             loading="lazy">
+                        ${item.baslik ? `
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60">
+                            <h3 class="text-white text-xl font-bold">${item.baslik}</h3>
+                            ${item.alt_baslik ? `<p class="text-gray-200">${item.alt_baslik}</p>` : ''}
+                        </div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Slider Controls
+            let scrollPos = 0;
+            const slider = document.getElementById('slider-container');
+            
+            document.querySelector('.slider-next').addEventListener('click', () => {
+                scrollPos += slider.offsetWidth * 0.85;
+                slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
             });
 
-            fetchData();
+            document.querySelector('.slider-prev').addEventListener('click', () => {
+                scrollPos -= slider.offsetWidth * 0.85;
+                slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+            });
+        }
+
+        function renderProducts(products, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = products.map(product => `
+                <div class="product-card bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="aspect-square mb-4 rounded-lg overflow-hidden">
+                        <img src="${product['ürünresmiurl’si'] || 'https://via.placeholder.com/400'}" 
+                             class="w-full h-full object-contain"
+                             loading="lazy">
+                    </div>
+                    <h3 class="font-semibold mb-2">${product['ürüni̇smi']}</h3>
+                    <div class="flex justify-between items-end">
+                        <span class="text-indigo-600 font-bold text-xl">
+                            ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
+                        </span>
+                        <button class="detail-btn px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full" 
+                                data-id="${product.id}">
+                            Detaylar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add detail event listeners
+            document.querySelectorAll('.detail-btn').forEach(btn => {
+                btn.addEventListener('click', () => showProductDetails(btn.dataset.id));
+            });
+        }
+
+        function showProductDetails(productId) {
+            const product = allProducts.find(p => p.id == productId);
+            if(!product) return;
+
+            const modalContent = `
+                <div class="md:col-span-1">
+                    <img src="${product['ürünresmiurl’si']}" 
+                         class="w-full h-64 object-contain">
+                </div>
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold">${product['ürüni̇smi']}</h2>
+                    <div class="text-xl font-bold text-indigo-600">
+                        ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
+                    </div>
+                    <div class="bg-gray-100 px-3 py-1 rounded-full inline-block">
+                        ${product.kategori}
+                    </div>
+                    <p class="text-gray-600">${product['ürünaçıklaması']}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${product.marka ? `<div>
+                            <div class="text-sm text-gray-500">Marka</div>
+                            <div>${product.marka}</div>
+                        </div>` : ''}
+                        ${product.durum ? `<div>
+                            <div class="text-sm text-gray-500">Durum</div>
+                            <div>${product.durum}</div>
+                        </div>` : ''}
+                        ${product.garanti ? `<div>
+                            <div class="text-sm text-gray-500">Garanti</div>
+                            <div>${product.garanti}</div>
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        // Filter Functions
+        function initFilters(products) {
+            const categories = [...new Set(products.map(p => p.kategori))].filter(Boolean);
+            const filterSelect = document.getElementById('category-filter');
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                filterSelect.appendChild(option);
+            });
+
+            document.getElementById('search').addEventListener('input', filterProducts);
+            filterSelect.addEventListener('change', filterProducts);
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            
+            const filtered = allProducts.filter(product => {
+                const matchesSearch = product['ürüni̇smi'].toLowerCase().includes(searchTerm);
+                const matchesCategory = category === 'all' || product.kategori === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderProducts(filtered, 'all-products-container');
+        }
+
+        // Modal Close
+        document.querySelector('#productModal button').addEventListener('click', () => {
+            document.getElementById('productModal').style.display = 'none';
         });
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+            errorDiv.innerHTML = `
+                <strong>Hata!</strong> ${message}
+                <button onclick="this.parentElement.remove()" class="ml-4">×</button>
+            `;
+            document.body.appendChild(errorDiv);
+        }
     </script>
 </body>
 </html>
