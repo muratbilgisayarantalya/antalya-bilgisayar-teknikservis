@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,203 +14,210 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
     <style>
         body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-#splash-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #fff;
-    flex-direction: column;
-}
+        #splash-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+            flex-direction: column;
+        }
 
-#splash-screen img {
-    width: 150px;
-    height: 150px;
-}
+        #slider, #hot-products, #all-products {
+            padding: 20px;
+        }
 
-#slider, #hot-products, #all-products {
-    padding: 20px;
-}
+        #slider-container {
+            display: flex;
+            overflow-x: auto;
+        }
 
-#slider-container {
-    display: flex;
-    overflow-x: auto;
-}
+        .slider-item {
+            flex: 0 0 auto;
+            width: 100%;
+            margin-right: 10px;
+        }
 
-.slider-item {
-    flex: 0 0 auto;
-    width: 100%;
-    margin-right: 10px;
-}
+        .slider-item img {
+            width: 100%;
+            height: auto;
+        }
 
-.slider-item img {
-    width: 100%;
-    height: auto;
-}
+        #hot-products-container, #all-products-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
 
-#hot-products-container, #all-products-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
+        .product-card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            width: calc(33.333% - 20px);
+            box-sizing: border-box;
+            transition: transform 0.2s;
+        }
 
-.product-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    width: calc(33.333% - 20px);
-    box-sizing: border-box;
-}
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
 
-.product-card img {
-    width: 100%;
-    height: auto;
-}
+        .product-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
 
-.hidden {
-    display: none;
-}
-         </style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
     <!-- Splash Screen -->
     <div id="splash-screen">
-        <img src="https://example.com/logo.png" alt="Logo">
-        <p>Yükleniyor...</p>
+        <img src="https://example.com/logo.png" alt="Logo" class="w-32 h-32 mb-4">
+        <p class="text-lg font-semibold">Yükleniyor...</p>
     </div>
 
     <!-- Slider -->
-    <div id="slider" class="hidden">
+    <div id="slider" class="hidden mt-6">
+        <h2 class="text-2xl font-bold text-center mb-4">Öne Çıkanlar</h2>
         <div id="slider-container"></div>
     </div>
 
     <!-- Sıcak Ürünler -->
     <div id="hot-products" class="hidden">
-        <h2>Sıcak Ürünler</h2>
+        <h2 class="text-2xl font-bold text-center mb-4">Sıcak Ürünler</h2>
         <div id="hot-products-container"></div>
     </div>
 
     <!-- Tüm Ürünler -->
-    <div id="all-products" class="hidden">
-        <h2>Tüm Ürünler</h2>
-        <input type="text" id="search" placeholder="Ürün ara...">
-        <select id="category-filter">
-            <option value="all">Tüm Kategoriler</option>
-        </select>
+    <div id="all-products" class="hidden mb-10">
+        <h2 class="text-2xl font-bold text-center mb-4">Tüm Ürünler</h2>
+        <div class="flex justify-center mb-4">
+            <input type="text" id="search" placeholder="Ürün ara..." class="p-2 border border-gray-300 rounded mr-2">
+            <select id="category-filter" class="p-2 border border-gray-300 rounded">
+                <option value="all">Tüm Kategoriler</option>
+            </select>
+        </div>
         <div id="all-products-container"></div>
     </div>
 
     <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const splashScreen = document.getElementById("splash-screen");
-    const slider = document.getElementById("slider");
-    const hotProducts = document.getElementById("hot-products");
-    const allProducts = document.getElementById("all-products");
+        document.addEventListener("DOMContentLoaded", function () {
+            const splashScreen = document.getElementById("splash-screen");
+            const slider = document.getElementById("slider");
+            const hotProducts = document.getElementById("hot-products");
+            const allProducts = document.getElementById("all-products");
+            
+            // Splash screen gösterimi
+            setTimeout(() => {
+                splashScreen.classList.add("hidden");
+                slider.classList.remove("hidden");
+                hotProducts.classList.remove("hidden");
+                allProducts.classList.remove("hidden");
+                
+                fetchData();
+            }, 3000);
+            
+            async function fetchData() {
+                const sliderData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=slider")
+                    .then(response => response.json());
+                const hotProductsData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=sicakurunler")
+                    .then(response => response.json());
+                const allProductsData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=tumurunler")
+                    .then(response => response.json());
 
-    // Splash screen gösterimi
-    setTimeout(() => {
-        splashScreen.classList.add("hidden");
-        slider.classList.remove("hidden");
-        hotProducts.classList.remove("hidden");
-        allProducts.classList.remove("hidden");
+                renderSlider(sliderData);
+                renderHotProducts(hotProductsData);
+                renderAllProducts(allProductsData);
+            }
 
-        fetchData();
-    }, 3000);
+            function renderSlider(data) {
+                const sliderContainer = document.getElementById("slider-container");
+                data.forEach(item => {
+                    const sliderItem = document.createElement("div");
+                    sliderItem.className = "slider-item";
+                    sliderItem.innerHTML = `<img src="${item.fotoğrafurl}" alt="Slider Image" class="rounded">`;
+                    sliderContainer.appendChild(sliderItem);
+                });
+            }
 
-    async function fetchData() {
-        const sliderData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=slider")
-            .then(response => response.json());
-        const hotProductsData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=sicakurunler")
-            .then(response => response.json());
-        const allProductsData = await fetch("https://script.google.com/macros/s/AKfycbwsmTdlj_ZnS8qfLZDCREFrQLewBWnJipeRaowcMDZABRud6NKfF_0SWqIBQTUMeqDf/exec?sheet=tumurunler")
-            .then(response => response.json());
+            function renderHotProducts(data) {
+                const hotProductsContainer = document.getElementById("hot-products-container");
+                data.forEach(item => {
+                    const productCard = document.createElement("div");
+                    productCard.className = "product-card";
+                    productCard.innerHTML = `
+                        <img src="${item.ürünresmiurl}" alt="${item.ürüni̇smi}" class="rounded">
+                        <h3 class="text-lg font-semibold mt-2">${item.ürüni̇smi}</h3>
+                        <p class="text-gray-700">${item.fiyat} TL</p>
+                        <p class="text-gray-600">${item.ürünaçıklaması}</p>
+                    `;
+                    hotProductsContainer.appendChild(productCard);
+                });
+            }
 
-        renderSlider(sliderData);
-        renderHotProducts(hotProductsData);
-        renderAllProducts(allProductsData);
-    }
+            function renderAllProducts(data) {
+                const allProductsContainer = document.getElementById("all-products-container");
+                const categoryFilter = document.getElementById("category-filter");
 
-    function renderSlider(data) {
-        const sliderContainer = document.getElementById("slider-container");
-        data.forEach(item => {
-            const sliderItem = document.createElement("div");
-            sliderItem.className = "slider-item";
-            sliderItem.innerHTML = `<img src="${item.fotoğrafurl’si}" alt="Slider Image">`;
-            sliderContainer.appendChild(sliderItem);
+                // Kategorileri filtreleme seçeneği olarak ekle
+                const categories = [...new Set(data.map(item => item.kategori))];
+                categories.forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+
+                // Tüm ürünleri render et
+                renderProducts(data);
+
+                // Arama ve filtreleme işlevselliği
+                document.getElementById("search").addEventListener("input", filterProducts);
+                categoryFilter.addEventListener("change", filterProducts);
+
+                function filterProducts() {
+                    const searchTerm = document.getElementById("search").value.toLowerCase();
+                    const selectedCategory = categoryFilter.value;
+
+                    const filteredData = data.filter(item => {
+                        const matchesSearch = item.ürüni̇smi.toLowerCase().includes(searchTerm);
+                        const matchesCategory = selectedCategory === "all" || item.kategori === selectedCategory;
+                        return matchesSearch && matchesCategory;
+                    });
+
+                    renderProducts(filteredData);
+                }
+
+                function renderProducts(products) {
+                    allProductsContainer.innerHTML = "";
+                    products.forEach(item => {
+                        const productCard = document.createElement("div");
+                        productCard.className = "product-card";
+                        productCard.innerHTML = `
+                            <img src="${item.ürünresmiurl}" alt="${item.ürüni̇smi}" class="rounded">
+                            <h3 class="text-lg font-semibold mt-2">${item.ürüni̇smi}</h3>
+                            <p class="text-gray-700">${item.fiyat} TL</p>
+                            <p class="text-gray-600">${item.ürünaçıklaması}</p>
+                        `;
+                        allProductsContainer.appendChild(productCard);
+                    });
+                }
+            }
         });
-    }
-
-    function renderHotProducts(data) {
-        const hotProductsContainer = document.getElementById("hot-products-container");
-        data.forEach(item => {
-            const productCard = document.createElement("div");
-            productCard.className = "product-card";
-            productCard.innerHTML = `
-                <img src="${item.ürünresmiurl’si}" alt="${item.ürüni̇smi}">
-                <h3>${item.ürüni̇smi}</h3>
-                <p>${item.fiyat(tl)} TL</p>
-                <p>${item.ürünaçıklaması}</p>
-            `;
-            hotProductsContainer.appendChild(productCard);
-        });
-    }
-
-    function renderAllProducts(data) {
-        const allProductsContainer = document.getElementById("all-products-container");
-        const categoryFilter = document.getElementById("category-filter");
-
-        // Kategorileri filtreleme seçeneği olarak ekle
-        const categories = [...new Set(data.map(item => item.kategori))];
-        categories.forEach(category => {
-            const option = document.createElement("option");
-            option.value = category;
-            option.textContent = category;
-            categoryFilter.appendChild(option);
-        });
-
-        // Tüm ürünleri render et
-        renderProducts(data);
-
-        // Arama ve filtreleme işlevselliği
-        document.getElementById("search").addEventListener("input", filterProducts);
-        categoryFilter.addEventListener("change", filterProducts);
-
-        function filterProducts() {
-            const searchTerm = document.getElementById("search").value.toLowerCase();
-            const selectedCategory = categoryFilter.value;
-
-            const filteredData = data.filter(item => {
-                const matchesSearch = item.ürüni̇smi.toLowerCase().includes(searchTerm);
-                const matchesCategory = selectedCategory === "all" || item.kategori === selectedCategory;
-                return matchesSearch && matchesCategory;
-            });
-
-            renderProducts(filteredData);
-        }
-
-        function renderProducts(products) {
-            allProductsContainer.innerHTML = "";
-            products.forEach(item => {
-                const productCard = document.createElement("div");
-                productCard.className = "product-card";
-                productCard.innerHTML = `
-                    <img src="${item.ürünresmiurl’si}" alt="${item.ürüni̇smi}">
-                    <h3>${item.ürüni̇smi}</h3>
-                    <p>${item.fiyat(tl)} TL</p>
-                    <p>${item.ürünaçıklaması}</p>
-                `;
-                allProductsContainer.appendChild(productCard);
-            });
-        }
-    }
-});
     </script>
 </body>
+
 </html>
