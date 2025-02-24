@@ -9,23 +9,43 @@
     <meta name="author" content="Murat Bilgisayar">
     <meta name="theme-color" content="#6366f1">
     <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
+        :root {
+            --animate-duration: 0.3s;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             @apply bg-gradient-to-br from-slate-50 to-purple-50;
         }
 
         .modal {
-            @apply fixed inset-0 bg-black/50 z-50 hidden items-start justify-center pt-20;
+            @apply fixed inset-0 bg-black/50 z-[999] hidden items-center justify-center;
             backdrop-filter: blur(5px);
+            animation: fadeIn var(--animate-duration) ease;
         }
 
-        .product-card img {
-            transition: transform 0.3s ease;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            @apply bg-white rounded-xl p-6 max-w-[95%] md:max-w-2xl w-full relative;
+            animation: slideIn var(--animate-duration) ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .product-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         #slider-container::-webkit-scrollbar {
@@ -46,7 +66,7 @@
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <header class="container mx-auto px-4 py-16 text-center">
         <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
             Antalya'nın En Kaliteli <span class="text-indigo-600">Bilgisayar</span> Mağazası
@@ -69,7 +89,7 @@
         <div id="slider-container" class="flex overflow-x-auto snap-x gap-4 pb-4"></div>
     </section>
 
-    <!-- Ürünler -->
+    <!-- Products Section -->
     <main class="container mx-auto px-4">
         <!-- Hot Products -->
         <section id="hot-products" class="mb-16">
@@ -90,10 +110,12 @@
         </section>
     </main>
 
-    <!-- Modal -->
+    <!-- Product Modal -->
     <div id="productModal" class="modal">
-        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
-            <button class="absolute top-4 right-4 text-2xl text-gray-500">&times;</button>
+        <div class="modal-content">
+            <button class="modal-close absolute -top-4 -right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100">
+                <i class="fas fa-times text-xl text-gray-600"></i>
+            </button>
             <div id="modalContent" class="grid md:grid-cols-2 gap-8"></div>
         </div>
     </div>
@@ -124,7 +146,6 @@
                 renderProducts(allProductsData, 'all-products-container');
                 
             } catch (error) {
-                console.error('API Hatası:', error);
                 showError('Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
             }
         });
@@ -135,7 +156,7 @@
             container.innerHTML = data.map(item => `
                 <div class="flex-none snap-start w-[85%]">
                     <div class="relative rounded-xl overflow-hidden h-64">
-                        <img src="${item['fotoğrafurl’si']}" 
+                        <img src="${item.fotoğrafurl’si}" 
                              class="w-full h-full object-cover"
                              loading="lazy">
                         ${item.baslik ? `
@@ -167,11 +188,11 @@
             container.innerHTML = products.map(product => `
                 <div class="product-card bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
                     <div class="aspect-square mb-4 rounded-lg overflow-hidden">
-                        <img src="${product['ürünresmiurl’si'] || 'https://via.placeholder.com/400'}" 
+                        <img src="${product.ürünresmiurl’si || 'https://via.placeholder.com/400'}" 
                              class="w-full h-full object-contain"
                              loading="lazy">
                     </div>
-                    <h3 class="font-semibold mb-2">${product['ürüni̇smi']}</h3>
+                    <h3 class="font-semibold mb-2">${product.ürüni̇smi}</h3>
                     <div class="flex justify-between items-end">
                         <span class="text-indigo-600 font-bold text-xl">
                             ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
@@ -184,7 +205,6 @@
                 </div>
             `).join('');
 
-            // Add detail event listeners
             document.querySelectorAll('.detail-btn').forEach(btn => {
                 btn.addEventListener('click', () => showProductDetails(btn.dataset.id));
             });
@@ -194,30 +214,36 @@
             const product = allProducts.find(p => p.id == productId);
             if(!product) return;
 
+            document.body.style.overflow = 'hidden';
+            document.getElementById('productModal').style.display = 'flex';
+
             const modalContent = `
                 <div class="md:col-span-1">
-                    <img src="${product['ürünresmiurl’si']}" 
-                         class="w-full h-64 object-contain">
+                    <img src="${product.ürünresmiurl’si}" 
+                         class="w-full h-64 object-contain rounded-lg">
                 </div>
                 <div class="space-y-4">
-                    <h2 class="text-2xl font-bold">${product['ürüni̇smi']}</h2>
+                    <h2 class="text-2xl font-bold">${product.ürüni̇smi}</h2>
                     <div class="text-xl font-bold text-indigo-600">
                         ${new Intl.NumberFormat('tr-TR').format(product['fiyat(tl)'])} TL
                     </div>
-                    <div class="bg-gray-100 px-3 py-1 rounded-full inline-block">
-                        ${product.kategori}
+                    <div class="flex flex-wrap gap-2">
+                        <div class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full">
+                            ${product.kategori}
+                        </div>
+                        ${product.durum ? `<div class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+                            ${product.durum}
+                        </div>` : ''}
                     </div>
-                    <p class="text-gray-600">${product['ürünaçıklaması']}</p>
+                    <p class="text-gray-600">${product.ürünaçıklaması}</p>
                     <div class="grid grid-cols-2 gap-4">
-                        ${product.marka ? `<div>
+                        ${product.marka ? `
+                        <div class="bg-gray-50 p-3 rounded-lg">
                             <div class="text-sm text-gray-500">Marka</div>
                             <div>${product.marka}</div>
                         </div>` : ''}
-                        ${product.durum ? `<div>
-                            <div class="text-sm text-gray-500">Durum</div>
-                            <div>${product.durum}</div>
-                        </div>` : ''}
-                        ${product.garanti ? `<div>
+                        ${product.garanti ? `
+                        <div class="bg-gray-50 p-3 rounded-lg">
                             <div class="text-sm text-gray-500">Garanti</div>
                             <div>${product.garanti}</div>
                         </div>` : ''}
@@ -226,8 +252,21 @@
             `;
 
             document.getElementById('modalContent').innerHTML = modalContent;
-            document.getElementById('productModal').style.display = 'flex';
         }
+
+        // Modal Functions
+        function closeModal() {
+            document.body.style.overflow = 'auto';
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        document.querySelectorAll('.modal-close, #productModal').forEach(element => {
+            element.addEventListener('click', (e) => {
+                if(e.target === element || element.classList.contains('modal-close')) {
+                    closeModal();
+                }
+            });
+        });
 
         // Filter Functions
         function initFilters(products) {
@@ -250,7 +289,7 @@
             const category = document.getElementById('category-filter').value;
             
             const filtered = allProducts.filter(product => {
-                const matchesSearch = product['ürüni̇smi'].toLowerCase().includes(searchTerm);
+                const matchesSearch = product.ürüni̇smi.toLowerCase().includes(searchTerm);
                 const matchesCategory = category === 'all' || product.kategori === category;
                 return matchesSearch && matchesCategory;
             });
@@ -258,14 +297,10 @@
             renderProducts(filtered, 'all-products-container');
         }
 
-        // Modal Close
-        document.querySelector('#productModal button').addEventListener('click', () => {
-            document.getElementById('productModal').style.display = 'none';
-        });
-
+        // Error Handling
         function showError(message) {
             const errorDiv = document.createElement('div');
-            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded animate-fadeIn';
             errorDiv.innerHTML = `
                 <strong>Hata!</strong> ${message}
                 <button onclick="this.parentElement.remove()" class="ml-4">×</button>
