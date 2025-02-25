@@ -9,30 +9,27 @@
     <meta name="author" content="Murat Bilgisayar">
     <meta name="theme-color" content="#6366f1">
     <title>Murat Bilgisayar | Antalya İkinci El Bilgisayar & Teknik Servis</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+        
         body {
             font-family: 'Inter', sans-serif;
             @apply bg-gradient-to-br from-slate-50 to-purple-50;
         }
 
         .modal {
-            @apply fixed inset-0 bg-black/50 z-50 hidden items-center justify-center;
+            @apply fixed inset-0 bg-black/50 z-50 hidden items-start justify-center pt-20;
             backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease-in-out;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
+        .product-card img {
+            transition: transform 0.3s ease;
+        }
 
-            to {
-                opacity: 1;
-            }
+        #slider-container::-webkit-scrollbar {
+            @apply h-2;
         }
     </style>
 </head>
@@ -56,18 +53,47 @@
         </h1>
     </header>
 
+    <!-- Slider -->
+    <section id="slider" class="container mx-auto px-4 mb-16">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Son Kampanyalar</h2>
+            <div class="flex gap-2">
+                <button class="slider-prev px-3 py-1 bg-white rounded-full shadow-md">
+                    <i class="fas fa-chevron-left text-indigo-600"></i>
+                </button>
+                <button class="slider-next px-3 py-1 bg-white rounded-full shadow-md">
+                    <i class="fas fa-chevron-right text-indigo-600"></i>
+                </button>
+            </div>
+        </div>
+        <div id="slider-container" class="flex overflow-x-auto snap-x gap-4 pb-4"></div>
+    </section>
+
     <!-- Ürünler -->
     <main class="container mx-auto px-4">
+        <!-- Hot Products -->
         <section id="hot-products" class="mb-16">
             <h2 class="text-2xl font-bold mb-6">Öne Çıkan Ürünler 🔥</h2>
             <div id="hot-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
+
+        <!-- All Products -->
+        <section id="all-products">
+            <div class="mb-8 flex flex-col md:flex-row gap-4">
+                <input type="text" id="search" placeholder="Ürün ara..." 
+                       class="flex-1 px-4 py-2 rounded-full border focus:ring-2 focus:ring-indigo-600">
+                <select id="category-filter" class="px-4 py-2 rounded-full border">
+                    <option value="all">Tüm Kategoriler</option>
+                </select>
+            </div>
+            <div id="all-products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
     </main>
 
     <!-- Modal -->
-    <div id="productModal" class="modal hidden">
-        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative animate-scaleIn">
-            <button id="modalClose" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-500">&times;</button>
+    <div id="productModal" class="modal">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
+            <button class="absolute top-4 right-4 text-2xl text-gray-500">&times;</button>
             <div id="modalContent" class="grid md:grid-cols-2 gap-8"></div>
         </div>
     </div>
@@ -78,23 +104,63 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const [hotRes, allRes] = await Promise.all([
+                const [sliderRes, hotRes, allRes] = await Promise.all([
+                    fetch(`${API_URL}?sheet=slider`),
                     fetch(`${API_URL}?sheet=sicakurunler`),
                     fetch(`${API_URL}?sheet=tumurunler`)
                 ]);
 
-                const [hotProducts, allProductsData] = await Promise.all([
+                const [sliderData, hotProducts, allProductsData] = await Promise.all([
+                    sliderRes.json(),
                     hotRes.json(),
                     allRes.json()
                 ]);
 
                 allProducts = allProductsData;
+                
+                renderSlider(sliderData);
                 renderProducts(hotProducts, 'hot-products-container');
+                initFilters(allProductsData);
                 renderProducts(allProductsData, 'all-products-container');
+                
             } catch (error) {
                 console.error('API Hatası:', error);
+                showError('Ürünler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
             }
         });
+
+        // Render Functions
+        function renderSlider(data) {
+            const container = document.getElementById('slider-container');
+            container.innerHTML = data.map(item => `
+                <div class="flex-none snap-start w-[85%]">
+                    <div class="relative rounded-xl overflow-hidden h-64">
+                        <img src="${item['fotoğrafurl’si']}" 
+                             class="w-full h-full object-cover"
+                             loading="lazy">
+                        ${item.baslik ? `
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60">
+                            <h3 class="text-white text-xl font-bold">${item.baslik}</h3>
+                            ${item.alt_baslik ? `<p class="text-gray-200">${item.alt_baslik}</p>` : ''}
+                        </div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Slider Controls
+            let scrollPos = 0;
+            const slider = document.getElementById('slider-container');
+            
+            document.querySelector('.slider-next').addEventListener('click', () => {
+                scrollPos += slider.offsetWidth * 0.85;
+                slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+            });
+
+            document.querySelector('.slider-prev').addEventListener('click', () => {
+                scrollPos -= slider.offsetWidth * 0.85;
+                slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+            });
+        }
 
         function renderProducts(products, containerId) {
             const container = document.getElementById(containerId);
@@ -118,6 +184,7 @@
                 </div>
             `).join('');
 
+            // Add detail event listeners
             document.querySelectorAll('.detail-btn').forEach(btn => {
                 btn.addEventListener('click', () => showProductDetails(btn.dataset.id));
             });
@@ -125,7 +192,7 @@
 
         function showProductDetails(productId) {
             const product = allProducts.find(p => p.id == productId);
-            if (!product) return;
+            if(!product) return;
 
             const modalContent = `
                 <div class="md:col-span-1">
@@ -141,28 +208,70 @@
                         ${product.kategori}
                     </div>
                     <p class="text-gray-600">${product['ürünaçıklaması']}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${product.marka ? `<div>
+                            <div class="text-sm text-gray-500">Marka</div>
+                            <div>${product.marka}</div>
+                        </div>` : ''}
+                        ${product.durum ? `<div>
+                            <div class="text-sm text-gray-500">Durum</div>
+                            <div>${product.durum}</div>
+                        </div>` : ''}
+                        ${product.garanti ? `<div>
+                            <div class="text-sm text-gray-500">Garanti</div>
+                            <div>${product.garanti}</div>
+                        </div>` : ''}
+                    </div>
                 </div>
             `;
 
             document.getElementById('modalContent').innerHTML = modalContent;
-            const modal = document.getElementById('productModal');
-            modal.classList.remove('hidden');
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        // Filter Functions
+        function initFilters(products) {
+            const categories = [...new Set(products.map(p => p.kategori))].filter(Boolean);
+            const filterSelect = document.getElementById('category-filter');
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                filterSelect.appendChild(option);
+            });
+
+            document.getElementById('search').addEventListener('input', filterProducts);
+            filterSelect.addEventListener('change', filterProducts);
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            
+            const filtered = allProducts.filter(product => {
+                const matchesSearch = product['ürüni̇smi'].toLowerCase().includes(searchTerm);
+                const matchesCategory = category === 'all' || product.kategori === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderProducts(filtered, 'all-products-container');
         }
 
         // Modal Close
-        document.getElementById('modalClose').addEventListener('click', () => {
-            document.getElementById('productModal').classList.add('hidden');
+        document.querySelector('#productModal button').addEventListener('click', () => {
+            document.getElementById('productModal').style.display = 'none';
         });
 
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('productModal');
-            if (e.target === modal) modal.classList.add('hidden');
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') document.getElementById('productModal').classList.add('hidden');
-        });
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+            errorDiv.innerHTML = `
+                <strong>Hata!</strong> ${message}
+                <button onclick="this.parentElement.remove()" class="ml-4">×</button>
+            `;
+            document.body.appendChild(errorDiv);
+        }
     </script>
 </body>
-
 </html>
