@@ -31,10 +31,114 @@
         #slider-container::-webkit-scrollbar {
             @apply h-2;
         }
+            .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .preloader-content {
+      text-align: center;
+    }
+
+    .preloader-logo {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 1.75rem;
+      color: #fff;
+      letter-spacing: .25em;
+    }
+
+    .preloader-logo img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .preloader-logo__letter {
+      display: inline-block;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .preloader-logo__letter.bold {
+      font-weight: 900;
+    }
+
+    .preloader-logo .red {
+      color: #6150e8;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    #content {
+      display: none;
+    }
+
+    @media screen and (max-width: 720px) {
+      .preloader-logo {
+        font-size: 1.25rem;
+      }
+    }
     </style>
+      <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var preloader = document.querySelector('.preloader');
+      var content = document.getElementById('content');
+      
+      // Animate letters sequentially
+      var letters = document.querySelectorAll('.preloader-logo__letter');
+      letters.forEach((letter, index) => {
+        letter.style.animationDelay = `${index * 0.1}s`;
+      });
+
+      // Hide preloader and show content after a delay
+      setTimeout(function() {
+        preloader.style.opacity = '0';
+        preloader.style.transition = 'opacity 0.5s ease-out';
+        setTimeout(function() {
+          preloader.style.display = 'none';
+          content.style.display = 'block';
+        }, 500);
+      }, 2500); // Adjust this delay as needed
+    });
+  </script>
 </head>
 
 <body>
+      <div class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiohj5HkI-g4lZH5zuIlZsayt6rSmeH9xY_g4aT3NfFghzbs87cUaUscmBNPFX3HNYdBIqTdwdo3JR5vI7Nnk7Zt7uIFmekiib2-7XpU4CWa0Ih-FBB6rhTJC4ndv1sJrX_sC8i9bYJnJPZMlVqiRKe9jv_HERxH_wptTfIuPn5ms9rSbI8W5d5XkYznRuQ/s0/1.PNG" alt="Logo">
+        <div>
+          <span class="preloader-logo__letter">M</span>
+          <span class="preloader-logo__letter">U</span>
+          <span class="preloader-logo__letter">R</span>
+          <span class="preloader-logo__letter">A</span>
+             <span class="preloader-logo__letter">T</span>
+          <span class="preloader-logo__letter bold red">B</span>
+          <span class="preloader-logo__letter bold red">İ</span>
+          <span class="preloader-logo__letter bold red">L</span>
+          <span class="preloader-logo__letter bold red">G</span>
+            <span class="preloader-logo__letter bold red">İ</span>
+            <span class="preloader-logo__letter bold red">S</span>
+            <span class="preloader-logo__letter bold red">A</span>
+            <span class="preloader-logo__letter bold red">Y</span>
+            <span class="preloader-logo__letter bold red">A</span>
+            <span class="preloader-logo__letter bold red">R</span>
+        </div>
+      </div>
+    </div>
+  </div>
     <!-- Navbar -->
     <nav class="bg-indigo-600 text-white sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex items-center justify-between">
